@@ -1,0 +1,32 @@
+*.md linguist-documentation
+*.py linguist-language=Python
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+
+# virtual env
+venv/
+.env/
+
+# ide
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+logs/
+*.log
+
+# pyinstaller / builds
+build/
+dist/
+*.spec
+*.exe
+
+# local config
+config.ini
