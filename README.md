@@ -48,8 +48,7 @@ After startup, the server begins listening for incoming connections.
 
 For Windows:
 
-* Unzip the archive containing `client.exe` and `config.ini`
-* Make sure the application and configuration file are located in the same `client` folder
+* Make sure the application `client.exe` and configuration file `config.ini` are located in the same folder.
 
 In `config.ini`, the host must be equal to the IP address of the machine where the server is running, otherwise the client will not be able to connect.
 Open **one or more terminal windows** and run:
@@ -162,8 +161,7 @@ python server/main.py
 
 Для Windows:
 
-* Распакуйте ZIP-архив, содержащий `client.exe` и `config.ini`
-* Важно, чтобы приложение и файл конфигурации находились в одной папке `client`
+* Важно, чтобы приложение `client.exe` и файл конфигурации `config.ini` находились в одной папке.
 
 В `config.ini` host должен быть равен IP-адресу машины, где запущен сервер, иначе клиент не сможет подключиться.
 Откройте **одно или несколько окон** терминала и запустите:
