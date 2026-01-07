@@ -46,6 +46,7 @@ After startup, the server begins listening for incoming connections.
 
 ### 2️⃣ Starting the Client
 
+It is important that the launch `client.py` and `config.ini` were in the same folder.
 In `config.ini`, the host must be equal to the IP address of the machine where the server is running, otherwise the client will not be able to connect.
 Open **one or more terminal windows** and run:
 
@@ -149,6 +150,7 @@ python server/main.py
 
 ### 2️⃣ Запуск клиента
 
+Важно, чтобы запуск `client.py` и `config.ini` были в одной папке.
 В `config.ini` host должен быть равен IP-адресу машины, где запущен сервер, иначе клиент не сможет подключиться.
 Откройте **одно или несколько окон** терминала и запустите:
 
