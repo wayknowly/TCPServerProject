@@ -207,6 +207,8 @@ YYYY-MM-DD HH:MM:SS [LEVEL] сообщение
 
 # config.ini
 
+```
 [server]
 host = 0.0.0.0 # IP
 port = 5000
+```
