@@ -42,7 +42,7 @@ class ChatClient:
     def __init__(self, master):
         self.master = master
         self.master.title("TCP Chat Client")
-        self.master.geometry("600x400")
+        self.master.geometry("850x650")
 
         self.host, self.port = load_config()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -72,7 +72,7 @@ class ChatClient:
         while True:
             nick = simpledialog.askstring(
                 "Никнейм",
-                "Введите ваш никнейм:",
+                "Введите ваш никнейм (3–16 символов):",
                 parent=self.master
             )
 
@@ -81,10 +81,18 @@ class ChatClient:
                 return False
 
             nick = nick.strip()
+
             if not nick:
                 messagebox.showwarning(
-                    "[INFO]",
-                    "Никнейм не может быть пустым"
+                    "Ошибка",
+                    "Ник не может быть пустым"
+                )
+                continue
+
+            if len(nick) < 3 or len(nick) > 16:
+                messagebox.showwarning(
+                    "Ошибка",
+                    "Длина ника должна быть от 3 до 16 символов"
                 )
                 continue
 
@@ -92,11 +100,12 @@ class ChatClient:
             response = self.sock.recv(BUFFER_SIZE).decode("utf-8")
 
             if response.startswith("[INFO]"):
-                messagebox.showinfo("Информация", response)
+                messagebox.showinfo("TCP Chat Client", response)
                 self.nick = nick
                 return True
             else:
-                messagebox.showwarning("Ошибка", response)
+                messagebox.showwarning("error", response)
+
 
     
     # элементы интерфейса
