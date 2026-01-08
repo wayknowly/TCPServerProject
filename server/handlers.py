@@ -1,160 +1,136 @@
-import threading
-import time
-import logging
+import asyncio
+from logger import logger
 
 MIN_NICK_LEN = 3
 MAX_NICK_LEN = 16
 
 clients = {}
-clients_lock = threading.Lock()
+clients_lock = asyncio.Lock()
 
 
-
-
-# отправка сообщений
-def send_to_user(username, message):
-    with clients_lock:
+async def send_to_user(username, message): # отправка сообщения конкретному пользователю
+    async with clients_lock:
         if username in clients:
+            writer = clients[username]["writer"]
             try:
-                clients[username]["socket"].sendall(message.encode())
-            except Exception:
-                disconnect_user(username)
+                writer.write(message.encode())
+                await writer.drain()
+            except Exception as e:
+                logger.exception(f"Ошибка при отправке сообщения {username}: {e}")
+                await disconnect_user(username)
 
 
-def broadcast(message, sender):
-    with clients_lock:
+async def broadcast(message, sender): # отправка сообщения всем кроме отправителя
+    async with clients_lock:
         for user, data in list(clients.items()):
             if user != sender:
+                writer = data["writer"]
                 try:
-                    data["socket"].sendall(message.encode())
-                except Exception:
-                    disconnect_user(user)
+                    writer.write(message.encode())
+                    await writer.drain()
+                except Exception as e:
+                    logger.exception(f"Ошибка при рассылке сообщения {user}: {e}")
+                    await disconnect_user(user)
 
 
-def disconnect_user(username):
-    with clients_lock:
+async def disconnect_user(username): # отключение пользователя
+    async with clients_lock:
         if username in clients:
             try:
-                clients[username]["socket"].close()
+                clients[username]["writer"].close()
+                await clients[username]["writer"].wait_closed()
             except Exception:
                 pass
             del clients[username]
 
-    broadcast(f"[SERVER] {username} покинул чат", "SERVER")
-    logging.info(f"{username} отключился")
+    await broadcast(f"[SERVER] {username} покинул чат", "SERVER")
+    logger.info(f"{username} отключился")
 
 
 # команды
-def handle_help(username):
-    send_to_user(
+async def handle_help(username):
+    await send_to_user(
         username,
         "/help — список команд\n"
         "/who — список подключенных\n"
-        "/ping — проверить задержку\n"
         "/msg <user> <text> — личное сообщение\n"
-        "/exit или exit — выход"
+        "/exit — выход"
     )
 
-
-def handle_who(username):
-    with clients_lock:
+# /who
+async def handle_who(username):
+    async with clients_lock:
         users = ", ".join(clients.keys())
-    send_to_user(username, f"Online: {users}")
+    await send_to_user(username, f"Online: {users}")
 
-
-def handle_private_message(sender, target, text):
-    with clients_lock:
+# /msg
+async def handle_private_message(sender, target, text):
+    async with clients_lock:
         if target not in clients:
-            send_to_user(sender, "Пользователь не найден")
+            await send_to_user(sender, "Пользователь не найден")
             return
 
-    send_to_user(target, f"[ЛС] {sender}: {text}")
-    send_to_user(sender, f"[{target}]: {text}")
+    await send_to_user(target, f"[ЛС] {sender}: {text}")
+    await send_to_user(sender, f"[{target}]: {text}")
+    logger.info(f"[ЛС] {sender} -> {target}: {text}")
 
 
-def handle_ping(username):
-    with clients_lock:
-        clients[username]["last_ping"] = time.time()
-    send_to_user(username, "__ping__")
-
-
-def handle_pong(username):
-    with clients_lock:
-        start = clients[username]["last_ping"]
-
-    if start:
-        rtt = (time.time() - start) * 1000
-        send_to_user(username, f"Ping: {rtt:.2f} ms")
-
-
-def handle_command(username, message):
-    parts = message.split(" ", 2)
+async def handle_command(username, message):
+    parts = message.strip().split(" ", 2)
     cmd = parts[0]
 
     if cmd == "/help":
-        handle_help(username)
-
+        await handle_help(username)
     elif cmd == "/who":
-        handle_who(username)
-
-    elif cmd == "/ping":
-        handle_ping(username)
-
+        await handle_who(username)
     elif cmd == "/msg":
         if len(parts) < 3:
-            send_to_user(username, "Используйте: /msg <user> <text>")
+            await send_to_user(username, "Используйте: /msg <user> <text>")
         else:
-            handle_private_message(username, parts[1], parts[2])
-
+            await handle_private_message(username, parts[1], parts[2])
     elif cmd == "/exit":
-        disconnect_user(username)
-
+        await disconnect_user(username)
     else:
-        send_to_user(username, "Неизвестная команда. Введите /help")
+        await send_to_user(username, "Неизвестная команда. Введите /help")
 
 
-
-def handle_client(conn, addr):
+async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    addr = writer.get_extra_info('peername')
     nick = None
-    try:
-        # регистрация ника
+
+    try: # регистрация ника
         while True:
             try:
-                data = conn.recv(1024)
-            except (ConnectionResetError, ConnectionAbortedError):
+                data = await reader.read(1024)
+            except (ConnectionResetError, ConnectionAbortedError, OSError):
                 return
-
             if not data:
                 return
 
-            nick = data.decode().strip()
-
-            with clients_lock:
-                if not (MIN_NICK_LEN <= len(nick) <= MAX_NICK_LEN):
-                    conn.send(
-                        f"Ник должен быть от {MIN_NICK_LEN} до {MAX_NICK_LEN} символов".encode()
-                    )
-                elif nick in clients:
-                    conn.send("Ник уже занят, введите другой".encode())
+            nick_candidate = data.decode().strip()
+            async with clients_lock:
+                if not (MIN_NICK_LEN <= len(nick_candidate) <= MAX_NICK_LEN):
+                    writer.write(f"Ник должен быть от {MIN_NICK_LEN} до {MAX_NICK_LEN} символов".encode())
+                    await writer.drain()
+                elif nick_candidate in clients:
+                    writer.write("Ник уже занят, введите другой".encode())
+                    await writer.drain()
                 else:
-                    clients[nick] = {
-                        "socket": conn,
-                        "address": addr,
-                        "last_ping": None
-                    }
-                    conn.send(f"[INFO] Добро пожаловать, {nick}!".encode())
+                    nick = nick_candidate
+                    clients[nick] = {"reader": reader, "writer": writer}
+                    writer.write(f"[INFO] Добро пожаловать, {nick}!".encode())
+                    await writer.drain()
                     break
 
-        logging.info(f"{nick} подключился")
-        broadcast(f"[SERVER] {nick} вошёл в чат", "SERVER")
+        logger.info(f"{nick} подключился с {addr}")
+        await broadcast(f"[SERVER] {nick} вошёл в чат", "SERVER")
 
         # основной цикл
         while True:
             try:
-                data = conn.recv(1024)
-            except (ConnectionResetError, ConnectionAbortedError):
+                data = await reader.read(1024)
+            except (ConnectionResetError, ConnectionAbortedError, OSError):
                 break
-
             if not data:
                 break
 
@@ -162,20 +138,17 @@ def handle_client(conn, addr):
             if not message:
                 continue
 
-            logging.info(f"[{nick}] {message}")
+            logger.info(f"[{nick}] {message}")
 
-            # ответ на ping
-            if message == "__pong__":
-                handle_pong(nick)
-                continue
-
-            # команды
             if message.startswith("/"):
-                handle_command(nick, message)
+                await handle_command(nick, message)
             else:
-                broadcast(f"{nick}: {message}", nick)
+                await broadcast(f"[{nick}]: {message}", nick)
 
+
+
+    except Exception as e:
+        logger.exception(f"Необработанная ошибка для {nick}: {e}")
     finally:
         if nick:
-            disconnect_user(nick)
-        conn.close()
+            await disconnect_user(nick)

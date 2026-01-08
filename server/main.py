@@ -1,28 +1,22 @@
-import socket
-import threading
+import asyncio
 from config import HOST, PORT
 from handlers import handle_client
-import logger
+from logger import logger
 
-def start_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((HOST, PORT))
-    server.listen()
-    print(f"[LISTENING] Сервер запущен на {HOST}:{PORT}")
+async def main():
+    server = await asyncio.start_server(handle_client, HOST, PORT)
+    addr = server.sockets[0].getsockname()
+    logger.info(f"Сервер запущен на {addr[0]}:{addr[1]}")
 
-    try:
-        while True:
-            conn, addr = server.accept()
-            thread = threading.Thread(target=handle_client, args=(conn, addr))
-            thread.start()
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count()-1}")
-    except KeyboardInterrupt:
-        print("\n[STOP] Сервер выключен")
-    finally:
-        server.close()
-
+    async with server:
+        await server.serve_forever()
 
 
 
 if __name__ == "__main__":
-    start_server()
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Сервер выключен")
+    except Exception as e:
+        logger.exception(f"Неожиданная ошибка: {e}")
