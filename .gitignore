@@ -31,8 +31,7 @@ dist/
 # local config
 config.ini
 
-client_gui/dist/
-client_gui/build/
-client_gui/__pycache__/
+dist/
+build/
 *.exe
 *.log
