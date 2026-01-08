@@ -8,7 +8,7 @@ The project demonstrates the basics of network programming, multithreading, sock
 
 ## 🚀 Features
 
-* Multithreaded TCP server
+* `asyncio` for asynchronous connection handling
 * Connect multiple clients at the same time
 * Sending messages to all clients (broadcast)
 * Registering nicknames
@@ -112,7 +112,7 @@ Logging functionality is implemented in a separate module: `logger.py`.
 
 ## 🚀 Возможности
 
-* Многопоточный TCP-сервер
+* `asyncio` для асинхронной обработки подключений
 * Подключение нескольких клиентов одновременно
 * Рассылка сообщений всем клиентам (broadcast)
 * Регистрация никнеймов (псевдонимов)
