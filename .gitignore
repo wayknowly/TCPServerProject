@@ -31,6 +31,7 @@ dist/
 # local config
 config.ini
 
+client/config.ini
 dist/
 build/
 *.exe
