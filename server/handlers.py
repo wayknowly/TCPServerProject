@@ -75,6 +75,7 @@ async def handle_private_message(sender, target, text):
     logger.info(f"[ЛС] {sender} -> {target}: {text}")
 
 
+# действия при выборе команд
 async def handle_command(username, message):
     parts = message.strip().split(" ", 2)
     cmd = parts[0]
@@ -109,12 +110,17 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
 
             nick_candidate = data.decode().strip()
             async with clients_lock:
+
+                # если ник не входит наши условия размера
                 if not (MIN_NICK_LEN <= len(nick_candidate) <= MAX_NICK_LEN):
                     writer.write(f"Ник должен быть от {MIN_NICK_LEN} до {MAX_NICK_LEN} символов".encode())
                     await writer.drain()
+
+                # если такой ник занят
                 elif nick_candidate in clients:
                     writer.write("Ник уже занят, введите другой".encode())
                     await writer.drain()
+
                 else:
                     nick = nick_candidate
                     clients[nick] = {"reader": reader, "writer": writer}

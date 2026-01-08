@@ -104,7 +104,7 @@ class ChatClient:
         # пкм вставить
         self.entry_message.bind("<Button-3>", self.show_entry_menu)
 
-        # кнопки
+        # кнопки действий
         buttons = tk.Frame(self.master)
         buttons.pack(pady=5)
         tk.Button(buttons, text="Отправить", command=self.send_message).pack(side="left", padx=5)
@@ -141,11 +141,13 @@ class ChatClient:
             except Exception:
                 break
 
+    # отправка сообщений
     def send_message(self, message=None):
         if message is None:
             message = self.entry_message.get().strip()
         if not message:
             return
+        
         if len(message) > MAX_MESSAGE_LEN:
             messagebox.showwarning("[INFO]", f"Сообщение слишком длинное (макс {MAX_MESSAGE_LEN} символов)")
             return
