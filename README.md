@@ -203,3 +203,12 @@ YYYY-MM-DD HH:MM:SS [LEVEL] сообщение
 ```
 
 Код логирования вынесен в отдельный модуль `logger.py`.
+
+
+# config.ini
+
+```
+[server]
+host = 0.0.0.0 # IP
+port = 5000
+```
