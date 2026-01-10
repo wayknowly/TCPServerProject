@@ -13,11 +13,9 @@ The project demonstrates the basics of network programming, multithreading, sock
 * Sending messages to all clients (broadcast)
 * Registering nicknames
 * Correctly disconnecting clients
-* Client exits using the `exit` command
 * Notifying clients when the server is shut down
 * Centralized logging (to file and console)
 * UTF-8 support for logs
-
 
 ## Project Launch
 
@@ -133,11 +131,9 @@ Logging functionality is implemented in a separate module: `logger.py`.
 * Рассылка сообщений всем клиентам (broadcast)
 * Регистрация никнеймов (псевдонимов)
 * Корректное отключение клиентов
-* Выход клиента по команде `exit`
 * Уведомление клиентов при выключении сервера
 * Централизованное логирование (в файл и консоль)
 * Поддержка UTF-8 для логов
-
 
 ## Запуск проекта
 
