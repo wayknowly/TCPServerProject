@@ -19,6 +19,9 @@ The project demonstrates the basics of network programming, multithreading, sock
 
 ## Project Launch
 
+* It is important that the launch `client.py` and `config.ini` were in the same folder.
+* In `config.ini`, the host must be equal to the IP address of the machine where the server is running, otherwise the client will not be able to connect.
+
 ### Linux/macOS
 
 Launch server:
@@ -53,8 +56,6 @@ After startup, the server begins listening for incoming connections.
 
 #### Starting the Client
 
-It is important that the launch `client.py` and `config.ini` were in the same folder.
-In `config.ini`, the host must be equal to the IP address of the machine where the server is running, otherwise the client will not be able to connect.
 Open **one or more terminal windows** and run:
 
 ```
