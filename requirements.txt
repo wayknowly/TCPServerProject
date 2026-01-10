@@ -1,0 +1,2 @@
+# all current dependencies are included in the Python standard library
+# pip install -r requirements.txt

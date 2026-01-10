@@ -6,7 +6,7 @@ A project for a TCP server and client in Python.
 The project demonstrates the basics of network programming, multithreading, socket management, logging, and the interaction of multiple clients through a server.
 
 
-## 🚀 Features
+## Features
 
 * `asyncio` for asynchronous connection handling
 * Connect multiple clients at the same time
@@ -17,18 +17,27 @@ The project demonstrates the basics of network programming, multithreading, sock
 * Notifying clients when the server is shut down
 * Centralized logging (to file and console)
 * UTF-8 support for logs
-* Easy launch via `.exe` (for clients) and `.bat` files (Windows)
 
-## ⚙️ Requirements
 
-* Python **3.9+** (server)
-* Windows (for `.bat` and `.exe` files)
+## Project Launch
 
-Only the standard Python library is used.
+### Linux/macOS
 
-## ▶️ Project Launch
+Launch server:
 
-### 1️⃣ Starting the Server
+```
+bash
+./scripts/run_server.sh
+```
+
+Launch client:
+
+```
+bash
+./scripts/run_client.sh
+```
+
+### Windows
 
 Run via:
 
@@ -44,7 +53,7 @@ python server/main.py
 
 After startup, the server begins listening for incoming connections.
 
-### 2️⃣ Starting the Client
+#### Starting the Client
 
 It is important that the launch `client.py` and `config.ini` were in the same folder.
 In `config.ini`, the host must be equal to the IP address of the machine where the server is running, otherwise the client will not be able to connect.
@@ -53,8 +62,9 @@ Open **one or more terminal windows** and run:
 ```
 python client.py
 ```
+* Easy launch via `.exe` for clients can be created using PyInstaller
 
-## 💬 Usage
+## Usage
 
 * After connecting to the server, enter a username
 * Type a message and press Enter — it will be sent to other clients
@@ -71,10 +81,16 @@ Messages from other clients:
 ["Nickname"]: message
 ```
 
+There is also a list of commands:
+
+```
+/help
+```
+
 Exit command:
 
 ```
-exit
+/exit
 ```
 
 If the server shuts down, the client receives:
@@ -85,7 +101,7 @@ If the server shuts down, the client receives:
 
 and exits gracefully.
 
-## 📝 Logging
+## Logging
 
 The server logs:
 
@@ -110,7 +126,7 @@ Logging functionality is implemented in a separate module: `logger.py`.
 Проект демонстрирует основы сетевого программирования, многопоточность, работу с сокетами, логирование и взаимодействие нескольких клиентов через сервер.
 
 
-## 🚀 Возможности
+## Возможности
 
 * `asyncio` для асинхронной обработки подключений
 * Подключение нескольких клиентов одновременно
@@ -121,18 +137,27 @@ Logging functionality is implemented in a separate module: `logger.py`.
 * Уведомление клиентов при выключении сервера
 * Централизованное логирование (в файл и консоль)
 * Поддержка UTF-8 для логов
-* Простой запуск через `.exe` (для клиентов) и `.bat` файлы (Windows)
 
-## ⚙️ Требования
 
-* Python **3.9+** (сервер)
-* Windows (для `.bat` и `.exe` файлов)
+## Запуск проекта
 
-Используется стандартная библиотека Python.
+### Linux/macOS
 
-## ▶️ Запуск проекта
+Запуск сервера:
 
-### 1️⃣ Запуск сервера
+```
+bash
+./scripts/run_server.sh
+```
+
+Запуск клиента:
+
+```
+bash
+./scripts/run_client.sh
+```
+
+### Windows
 
 Запуск через:
 
@@ -148,7 +173,7 @@ python server/main.py
 
 После запуска сервер начинает принимать подключения.
 
-### 2️⃣ Запуск клиента
+#### Запуск клиента
 
 Важно, чтобы запуск `client.py` и `config.ini` были в одной папке.
 В `config.ini` host должен быть равен IP-адресу машины, где запущен сервер, иначе клиент не сможет подключиться.
@@ -157,8 +182,9 @@ python server/main.py
 ```
 python client.py
 ```
+* Простой запуск через `.exe` для клиентов может быть создан с помощью PyInstaller
 
-## 💬 Использование
+## Использование
 
 * После подключения к серверу необходимо ввести имя пользователя
 * Введите сообщение и нажмите Enter — оно будет отправлено другим клиентам
@@ -175,10 +201,16 @@ python client.py
 ["Ник"]: сообщение
 ```
 
+Также существует список команд:
+
+```
+/help
+```
+
 Команда выхода:
 
 ```
-exit
+/exit
 ```
 
 Если сервер выключается, клиент получает:
@@ -189,7 +221,7 @@ exit
 
 и корректно завершает работу.
 
-## 📝 Логирование
+## Логирование
 
 Сервер ведёт логирование:
 
@@ -204,6 +236,7 @@ YYYY-MM-DD HH:MM:SS [LEVEL] сообщение
 
 Код логирования вынесен в отдельный модуль `logger.py`.
 
+---
 
 # config.ini
 
