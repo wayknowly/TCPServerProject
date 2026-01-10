@@ -111,7 +111,7 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
             nick_candidate = data.decode().strip()
             async with clients_lock:
 
-                # если ник не входит наши условия размера
+                # если ник не входит в наши условия
                 if not (MIN_NICK_LEN <= len(nick_candidate) <= MAX_NICK_LEN):
                     writer.write(f"Ник должен быть от {MIN_NICK_LEN} до {MAX_NICK_LEN} символов".encode())
                     await writer.drain()
